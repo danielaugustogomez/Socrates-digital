@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -30,13 +31,6 @@ st.markdown("""
         transform: translateY(-2px) !important;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.15) !important;
     }
-    /* Contenedor para centrar la imagen de los alumnos en el sidebar */
-    .student-img-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 15px;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -47,9 +41,9 @@ st.markdown("<h1 style='text-align: center; color: #00163A; font-size: 2.8rem; f
 col_templo, col_texto, col_robot = st.columns([1, 4, 1])
 
 with col_templo:
-    try:
+    if os.path.exists("templo.png"):
         st.image("templo.png", width=95)
-    except Exception:
+    else:
         st.markdown("<h1 style='text-align: center;'>🏛️</h1>", unsafe_allow_html=True)
 
 with col_texto:
@@ -60,9 +54,11 @@ with col_texto:
     """, unsafe_allow_html=True)
 
 with col_robot:
-    try:
+    if os.path.exists("robot_grande (1).png"):
         st.image("robot_grande (1).png", width=95)
-    except Exception:
+    elif os.path.exists("robot_grande.png"):
+        st.image("robot_grande.png", width=95)
+    else:
         st.markdown("<h1 style='text-align: center;'>🤖</h1>", unsafe_allow_html=True)
 
 st.markdown("---")
@@ -78,12 +74,12 @@ claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 with st.sidebar:
     st.markdown("<h2 style='color: #00163A; font-size: 1.3rem; font-weight: 700;'>👤 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
     
-    # Imagen de los estudiantes centrada y con tamaño controlado
-    try:
+    # Imagen de los estudiantes
+    if os.path.exists("estudiantes_juntos.png"):
         col_side_left, col_side_img, col_side_right = st.columns([1, 4, 1])
         with col_side_img:
             st.image("estudiantes_juntos.png", width=180)
-    except Exception:
+    else:
         st.markdown("<h1 style='text-align: center;'>👧👦</h1>", unsafe_allow_html=True)
 
     nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez")
@@ -143,6 +139,14 @@ if not campos_completos:
 
 primer_nombre = nombre_alumno.strip().split()[0]
 
+# Selección de avatar para el bot en el chat
+if os.path.exists("robot_pequeño.png"):
+    avatar_bot = "robot_pequeño.png"
+elif os.path.exists("robot_pequeno.png"):
+    avatar_bot = "robot_pequeno.png"
+else:
+    avatar_bot = "🤖"
+
 # ==========================================
 # 3. MOTOR SOCRÁTICO (SYSTEM PROMPT)
 # ==========================================
@@ -189,8 +193,8 @@ if "messages" not in st.session_state or st.session_state.get("current_student")
 
 # Renderizado de la conversación
 for msg in st.session_state.messages:
-    avatar_path = "robotito.png" if msg["role"] == "assistant" else "👦"
-    with st.chat_message(msg["role"], avatar=avatar_path):
+    current_avatar = avatar_bot if msg["role"] == "assistant" else "👦"
+    with st.chat_message(msg["role"], avatar=current_avatar):
         st.write(msg["content"])
 
 # Entrada de usuario
@@ -239,7 +243,7 @@ if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
                 "timestamp": reply_time,
                 "fase": fase_actual
             })
-            with st.chat_message("assistant", avatar="robot_pequeno.png"):
+            with st.chat_message("assistant", avatar=avatar_bot):
                 st.write(bot_reply)
             st.rerun()
 
