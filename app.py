@@ -12,24 +12,100 @@ st.set_page_config(
     layout="wide"
 )
 
-# Título Limpio (sin íconos pegados arriba)
-st.markdown("<h1 style='text-align: center; color: #00163A; font-size: 2.5rem; font-weight: 800; margin-bottom: 0px;'>SÓCRATES DIGITAL</h1>", unsafe_allow_html=True)
+# Estilos CSS personalizados para réplica exacta de la interfaz
+st.markdown("""
+    <style>
+    /* Estilos generales de la aplicación */
+    .stApp {
+        background-color: #E6E3FE;
+    }
+    
+    /* Botones redondeados con efecto hover */
+    .stButton>button {
+        background-color: #D5DBCA !important;
+        color: #00163A !important;
+        border: none !important;
+        border-radius: 12px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease-in-out !important;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.15) !important;
+    }
+    
+    /* Contenedores de Ilustraciones */
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0px;
+    }
+    .sub-title-text {
+        text-align: center;
+        color: #00163A;
+        font-size: 1.25rem;
+        font-weight: 600;
+        line-height: 1.4;
+        margin: 0px 15px;
+    }
+    .student-card {
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.4);
+        border-radius: 15px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# Encabezado enmarcado: Templo a la izquierda | Subtítulo | Cabeza de Robot a la derecha
-col_left, col_center, col_right = st.columns([1, 4, 1])
+# Título Limpio (sin íconos arriba)
+st.markdown("<h1 style='text-align: center; color: #00163A; font-size: 2.8rem; font-weight: 800; margin-bottom: 10px;'>SÓCRATES DIGITAL</h1>", unsafe_allow_html=True)
 
-with col_left:
-    st.markdown("<h1 style='text-align: center; font-size: 4rem; margin: 0;'>🏛️</h1>", unsafe_allow_html=True)
+# Encabezado enmarcado: Templo a la izquierda | Subtítulo al centro | Robot a la derecha
+col_templo, col_texto, col_robot = st.columns([1, 4, 1])
 
-with col_center:
+with col_templo:
+    # Ilustración SVG del Templo Griego Clásico
     st.markdown("""
-        <p style='text-align: center; color: #00163A; font-size: 1.2rem; font-weight: 600; line-height: 1.4; margin-top: 15px;'>
-            Tutor Mayéutico Inteligente — Desarrollo de Autonomía Cognitiva y Pensamiento Crítico
-        </p>
+        <div style="text-align: center;">
+            <svg width="85" height="85" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 6L4 22H60L32 6Z" fill="#8B7E74" stroke="#00163A" stroke-width="2"/>
+                <rect x="8" y="22" width="48" height="6" fill="#D5DBCA" stroke="#00163A" stroke-width="2"/>
+                <rect x="12" y="28" width="6" height="24" fill="#E6E3FE" stroke="#00163A" stroke-width="2"/>
+                <rect x="24" y="28" width="6" height="24" fill="#E6E3FE" stroke="#00163A" stroke-width="2"/>
+                <rect x="34" y="28" width="6" height="24" fill="#E6E3FE" stroke="#00163A" stroke-width="2"/>
+                <rect x="46" y="28" width="6" height="24" fill="#E6E3FE" stroke="#00163A" stroke-width="2"/>
+                <rect x="6" y="52" width="52" height="6" fill="#D5DBCA" stroke="#00163A" stroke-width="2"/>
+            </svg>
+        </div>
     """, unsafe_allow_html=True)
 
-with col_right:
-    st.markdown("<h1 style='text-align: center; font-size: 4rem; margin: 0;'>🤖</h1>", unsafe_allow_html=True)
+with col_texto:
+    st.markdown("""
+        <div class="sub-title-text">
+            Tutor Mayéutico Inteligente — Desarrollo de Autonomía Cognitiva y Pensamiento Crítico
+        </div>
+    """, unsafe_allow_html=True)
+
+with col_robot:
+    # Ilustración SVG de la Cabeza del Robot Futurista Amigable
+    st.markdown("""
+        <div style="text-align: center;">
+            <svg width="85" height="85" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="14" y="16" width="36" height="32" rx="10" fill="#71C9CE" stroke="#00163A" stroke-width="2"/>
+                <circle cx="25" cy="30" r="5" fill="#00163A"/>
+                <circle cx="39" cy="30" r="5" fill="#00163A"/>
+                <circle cx="26" cy="29" r="1.5" fill="#FFFFFF"/>
+                <circle cx="40" cy="29" r="1.5" fill="#FFFFFF"/>
+                <path d="M26 40 C 30 43, 34 43, 38 40" stroke="#00163A" stroke-width="2" stroke-linecap="round"/>
+                <line x1="32" y1="6" x2="32" y2="16" stroke="#00163A" stroke-width="2"/>
+                <circle cx="32" cy="5" r="3" fill="#FFB5A9" stroke="#00163A" stroke-width="1.5"/>
+                <rect x="8" y="26" width="6" height="12" rx="3" fill="#CBF1F5" stroke="#00163A" stroke-width="1.5"/>
+                <rect x="50" y="26" width="6" height="12" rx="3" fill="#CBF1F5" stroke="#00163A" stroke-width="1.5"/>
+            </svg>
+        </div>
+    """, unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -42,8 +118,24 @@ claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 # 2. BARRA LATERAL (REGISTRO Y CONFIGURACIÓN)
 # ==========================================
 with st.sidebar:
-    st.markdown("<h2 style='color: #00163A; font-size: 1.3rem;'>👧👦 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #00163A; font-size: 1.3rem; font-weight: 700;'>👤 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
     
+    # Ilustración vectorial de Niña y Niño Estudiantes
+    st.markdown("""
+        <div class="student-card">
+            <svg width="150" height="90" viewBox="0 0 120 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Niña -->
+                <circle cx="35" cy="22" r="12" fill="#FFD8D1" stroke="#00163A" stroke-width="1.5"/>
+                <path d="M23 20 C 23 10, 47 10, 47 20 C 47 25, 23 25, 23 20" fill="#8B4513"/>
+                <path d="M20 55 C 20 38, 50 38, 50 55" fill="#FFB5A9" stroke="#00163A" stroke-width="1.5"/>
+                <!-- Niño -->
+                <circle cx="85" cy="22" r="12" fill="#FFD8D1" stroke="#00163A" stroke-width="1.5"/>
+                <path d="M73 18 C 75 10, 95 10, 97 18" fill="#2C3E50" stroke="#00163A" stroke-width="1.5"/>
+                <path d="M70 55 C 70 38, 100 38, 100 55" fill="#71C9CE" stroke="#00163A" stroke-width="1.5"/>
+            </svg>
+        </div>
+    """, unsafe_allow_html=True)
+
     nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez")
     curso_alumno = st.text_input("Curso / División *", placeholder="Ej: 5° A")
     materia_tema = st.text_input("Materia / Tema *", placeholder="Ej: TIC / Analógico vs Digital")
@@ -105,7 +197,7 @@ primer_nombre = nombre_alumno.strip().split()[0]
 # 3. MOTOR SOCRÁTICO (SYSTEM PROMPT)
 # ==========================================
 SYSTEM_PROMPT = f"""
-Actúas estrictamente como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (16 a 18 años). Hablás con tu alumno {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
+Actúas strictly como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (16 a 18 años). Hablás con tu alumno {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
 
 PRINCIPIOS GENERALES Y RIGOR PEDAGÓGICO:
 1. RIGOR CONCEPTUAL BASE:
