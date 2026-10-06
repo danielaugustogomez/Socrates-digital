@@ -189,7 +189,7 @@ if "messages" not in st.session_state or st.session_state.get("current_student")
 
 # Renderizado de la conversación
 for msg in st.session_state.messages:
-    avatar_path = "robot_pequeno.png" if msg["role"] == "assistant" else "👦"
+    avatar_path = "robotito.png" if msg["role"] == "assistant" else "👦"
     with st.chat_message(msg["role"], avatar=avatar_path):
         st.write(msg["content"])
 
