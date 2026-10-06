@@ -12,50 +12,24 @@ st.set_page_config(
     layout="wide"
 )
 
-# Estilos CSS para animaciones, imágenes decorativas y bordes redondeados
-st.markdown("""
-    <style>
-    /* Estilo y animación suave para los botones */
-    .stButton>button {
-        transition: all 0.3s ease-in-out;
-        border-radius: 12px;
-        font-weight: 600;
-    }
-    .stButton>button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0px 4px 12px rgba(0,0,0,0.12);
-    }
-    
-    /* Contenedor de la ilustración del Registro */
-    .kids-container {
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    .kids-img {
-        width: 180px;
-        border-radius: 10px;
-    }
-    </style>
-""", unsafe_allow_html=True)
+# Título Limpio (sin íconos pegados arriba)
+st.markdown("<h1 style='text-align: center; color: #00163A; font-size: 2.5rem; font-weight: 800; margin-bottom: 0px;'>SÓCRATES DIGITAL</h1>", unsafe_allow_html=True)
 
-# Título Limpio sin íconos arriba
-st.markdown("<h1 style='text-align: center; font-size: 2.8rem; font-weight: 800; margin-bottom: 5px;'>SÓCRATES DIGITAL</h1>", unsafe_allow_html=True)
-
-# Encabezado enmarcado: Templo a la izquierda, Frase al centro, Robot a la derecha
-col_left, col_center, col_right = st.columns([1.2, 4, 1.2])
+# Encabezado enmarcado: Templo a la izquierda | Subtítulo | Cabeza de Robot a la derecha
+col_left, col_center, col_right = st.columns([1, 4, 1])
 
 with col_left:
-    st.image("https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3db.png", width=90)
+    st.markdown("<h1 style='text-align: center; font-size: 4rem; margin: 0;'>🏛️</h1>", unsafe_allow_html=True)
 
 with col_center:
     st.markdown("""
-        <p style='text-align: center; font-size: 1.25rem; font-weight: 600; line-height: 1.4; margin-top: 15px;'>
+        <p style='text-align: center; color: #00163A; font-size: 1.2rem; font-weight: 600; line-height: 1.4; margin-top: 15px;'>
             Tutor Mayéutico Inteligente — Desarrollo de Autonomía Cognitiva y Pensamiento Crítico
         </p>
     """, unsafe_allow_html=True)
 
 with col_right:
-    st.image("https://api.dicebear.com/7.x/bottts/svg?seed=SocratesRobot&backgroundColor=b6e3f4", width=95)
+    st.markdown("<h1 style='text-align: center; font-size: 4rem; margin: 0;'>🤖</h1>", unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -68,15 +42,8 @@ claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 # 2. BARRA LATERAL (REGISTRO Y CONFIGURACIÓN)
 # ==========================================
 with st.sidebar:
-    st.markdown("<h2 style='font-size: 1.4rem;'>👤 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #00163A; font-size: 1.3rem;'>👧👦 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
     
-    # Ilustración de Niña y Niño Estudiantes
-    st.markdown("""
-        <div class='kids-container'>
-            <img src='https://cdni.iconscout.com/illustration/premium/thumb/school-students-illustration-download-in-svg-png-gif-file-formats--boy-girl-pupil-kids-education-pack-illustrations-3560241.png' class='kids-img' alt='Estudiantes'>
-        </div>
-    """, unsafe_allow_html=True)
-
     nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez")
     curso_alumno = st.text_input("Curso / División *", placeholder="Ej: 5° A")
     materia_tema = st.text_input("Materia / Tema *", placeholder="Ej: TIC / Analógico vs Digital")
@@ -180,8 +147,8 @@ if "messages" not in st.session_state or st.session_state.get("current_student")
 
 # Renderizado de la conversación
 for msg in st.session_state.messages:
-    avatar_url = "https://api.dicebear.com/7.x/bottts/svg?seed=SocratesRobot&backgroundColor=b6e3f4" if msg["role"] == "assistant" else "https://api.dicebear.com/7.x/open-peeps/svg?seed=Student&face=smile"
-    with st.chat_message(msg["role"], avatar=avatar_url):
+    avatar_icon = "🤖" if msg["role"] == "assistant" else "👦"
+    with st.chat_message(msg["role"], avatar=avatar_icon):
         st.write(msg["content"])
 
 # Entrada de usuario
@@ -202,8 +169,7 @@ if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
         "fase": fase_actual
     })
     
-    student_avatar = "https://api.dicebear.com/7.x/open-peeps/svg?seed=Student&face=smile"
-    with st.chat_message("user", avatar=student_avatar):
+    with st.chat_message("user", avatar="👦"):
         st.write(user_input)
 
     try:
@@ -231,8 +197,7 @@ if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
                 "timestamp": reply_time,
                 "fase": fase_actual
             })
-            bot_avatar = "https://api.dicebear.com/7.x/bottts/svg?seed=SocratesRobot&backgroundColor=b6e3f4"
-            with st.chat_message("assistant", avatar=bot_avatar):
+            with st.chat_message("assistant", avatar="🤖"):
                 st.write(bot_reply)
             st.rerun()
 
