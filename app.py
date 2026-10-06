@@ -8,12 +8,56 @@ import anthropic
 # ==========================================
 st.set_page_config(
     page_title="SÓCRATES DIGITAL — Tutor Mayéutico", 
-    page_icon="🤖", 
+    page_icon="🏛️", 
     layout="wide"
 )
 
-st.title("🤖🏛️ SÓCRATES DIGITAL")
-st.caption("Tutor Mayéutico Inteligente — Desarrollo de Autonomía Cognitiva y Pensamiento Crítico")
+# Estilos CSS para animaciones, imágenes decorativas y bordes redondeados
+st.markdown("""
+    <style>
+    /* Estilo y animación suave para los botones */
+    .stButton>button {
+        transition: all 0.3s ease-in-out;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+    .stButton>button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 4px 12px rgba(0,0,0,0.12);
+    }
+    
+    /* Contenedor de la ilustración del Registro */
+    .kids-container {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    .kids-img {
+        width: 180px;
+        border-radius: 10px;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Título Limpio sin íconos arriba
+st.markdown("<h1 style='text-align: center; font-size: 2.8rem; font-weight: 800; margin-bottom: 5px;'>SÓCRATES DIGITAL</h1>", unsafe_allow_html=True)
+
+# Encabezado enmarcado: Templo a la izquierda, Frase al centro, Robot a la derecha
+col_left, col_center, col_right = st.columns([1.2, 4, 1.2])
+
+with col_left:
+    st.image("https://raw.githubusercontent.com/twitter/twemoji/master/assets/72x72/1f3db.png", width=90)
+
+with col_center:
+    st.markdown("""
+        <p style='text-align: center; font-size: 1.25rem; font-weight: 600; line-height: 1.4; margin-top: 15px;'>
+            Tutor Mayéutico Inteligente — Desarrollo de Autonomía Cognitiva y Pensamiento Crítico
+        </p>
+    """, unsafe_allow_html=True)
+
+with col_right:
+    st.image("https://api.dicebear.com/7.x/bottts/svg?seed=SocratesRobot&backgroundColor=b6e3f4", width=95)
+
+st.markdown("---")
 
 # ==========================================
 # GESTIÓN DE API KEY (SECRETS O MANUAL)
@@ -24,20 +68,26 @@ claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 # 2. BARRA LATERAL (REGISTRO Y CONFIGURACIÓN)
 # ==========================================
 with st.sidebar:
-    st.header("👤 Registro del Alumno")
+    st.markdown("<h2 style='font-size: 1.4rem;'>👤 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
+    
+    # Ilustración de Niña y Niño Estudiantes
+    st.markdown("""
+        <div class='kids-container'>
+            <img src='https://cdni.iconscout.com/illustration/premium/thumb/school-students-illustration-download-in-svg-png-gif-file-formats--boy-girl-pupil-kids-education-pack-illustrations-3560241.png' class='kids-img' alt='Estudiantes'>
+        </div>
+    """, unsafe_allow_html=True)
+
     nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez")
     curso_alumno = st.text_input("Curso / División *", placeholder="Ej: 5° A")
     materia_tema = st.text_input("Materia / Tema *", placeholder="Ej: TIC / Analógico vs Digital")
     
-    # Si por alguna razón no se configuró en Secrets, se solicita manualmente como respaldo
     if not claude_api_key:
         st.markdown("---")
         st.header("🔑 Configuración de API")
         claude_api_key = st.text_input("Claude API Key (sk-ant-...):", type="password")
 
     st.markdown("---")
-    st.header("🔄 Control de Sesión")
-    if st.button("🧹 Nuevo Alumno / Reiniciar Chat"):
+    if st.button("🧹 Nuevo Alumno / Reiniciar Chat", use_container_width=True):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
@@ -70,10 +120,11 @@ with st.sidebar:
                 label="📥 Descargar Trazabilidad (CSV)",
                 data=csv_data,
                 file_name=nombre_archivo,
-                mime="text/csv"
+                mime="text/csv",
+                use_container_width=True
             )
 
-# Validar que los campos obligatorios estén completos
+# Validar datos del alumno
 campos_completos = bool(nombre_alumno.strip() and curso_alumno.strip() and materia_tema.strip())
 
 if not campos_completos:
@@ -84,7 +135,7 @@ if not campos_completos:
 primer_nombre = nombre_alumno.strip().split()[0]
 
 # ==========================================
-# 3. MOTOR SOCRÁTICO (SYSTEM PROMPT DEF. TESIS)
+# 3. MOTOR SOCRÁTICO (SYSTEM PROMPT)
 # ==========================================
 SYSTEM_PROMPT = f"""
 Actúas estrictamente como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (16 a 18 años). Hablás con tu alumno {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
@@ -103,34 +154,19 @@ PRINCIPIOS GENERALES Y RIGOR PEDAGÓGICO:
    - Mantené un tono cercano, claro y sintético (máximo 2 a 3 oraciones por mensaje).
    - Formulá ÚNICAMENTE UNA pregunta al final de tu respuesta para mantener la secuencia dialógica.
 
-====================================================================
 INVARIANTES GENERALES DE CONTROL Y CALIDAD DIALÓGICA:
-====================================================================
-4. NEUTRALIDAD Y NO-INDUCCIÓN EN PREGUNTAS:
-   - Queda estrictamente PROHIBIDO incluir las respuestas, categorías o ejemplos sugeridos dentro de la pregunta enunciada. La pregunta debe ser abierta o de inducción neutra.
-
-5. GRADUALIDAD Y DOSIFICACIÓN DEL ANDAMIAJE (PROTOCOLO CONOCIMIENTO GRADO 0):
-   - No introduzcas modelos analógicos, metáforas explicativas ni marcos teóricos completos en la primera respuesta. Indagá primero el conocimiento previo o la experiencia directa del estudiante.
-
-6. OBSERVABILIDAD Y FENOMENOLOGÍA EXTERNA:
-   - Indagá exclusivamente sobre uso externo, efectos perceptibles por los sentidos o interacciones visibles. Queda prohibido preguntar por mecanismos internos, circuitos ocultos o estructuras inobservables de artefactos o sistemas.
-
-7. PIVOTEO Y ESCUCHA ACTIVA:
-   - Si {primer_nombre} realiza una pregunta directa, manifiesta una duda específica sobre el marco de trabajo o requiere una aclaración puntual, abordá e integrá esa inquietud inmediatamente en tu siguiente respuesta. No fuerces secuencias rígidas ni pospongas la duda del estudiante.
-
-8. RE-ENCUADRE BINARIO ANTE ERRORES:
-   - Si {primer_nombre} responde "No sé" o expresa una idea errónea/desviada, NO proporciones el ejemplo resuelto ni la solución. Simplificá el andamiaje ofreciendo una elección binaria o una comparación simple sobre dos estados contrapuestos para que el alumno deduzca.
-
-9. INVARIANTE DE INTERFAZ TEXTUAL:
-   - La comunicación es puramente por texto. Está prohibido mencionar o sugerir elementos visuales, fotos, gráficos, esquemas o recursos en pantalla. Usá representaciones mentales ("Imaginá...", "Recordá...", "Pensá en...").
-
-10. CIERRE ASERTIVO Y SÍNTESIS:
-    - Cuando {primer_nombre} formule la definición correcta o manifieste haber comprendido y exprese cierre o agradecimiento, validá el logro brevemente y concluí la interacción en un solo mensaje, sin reabrir interrogantes ni extender la despedida.
+4. NEUTRALIDAD Y NO-INDUCCIÓN EN PREGUNTAS: Queda estrictamente PROHIBIDO incluir las respuestas o ejemplos sugeridos dentro de la pregunta.
+5. GRADUALIDAD Y DOSIFICACIÓN DEL ANDAMIAJE: No introduzcas modelos teóricos completos en la primera respuesta.
+6. OBSERVABILIDAD Y FENOMENOLOGÍA EXTERNA: Indagá exclusivamente sobre uso externo, efectos perceptibles por los sentidos o interacciones visibles.
+7. PIVOTEO Y ESCUCHA ACTIVA: Si el alumno hace una pregunta directa, abordá esa inquietud en tu siguiente respuesta.
+8. RE-ENCUADRE BINARIO ANTE ERRORES: Si responde "No sé", simplificá ofreciendo una elección binaria.
+9. INVARIANTE DE INTERFAZ TEXTUAL: La comunicación es puramente por texto.
+10. CIERRE ASERTIVO Y SÍNTESIS: Cuando el alumno demuestre comprensión, validá el logro brevemente y concluí.
 """
 
 mensaje_bienvenida_unico = f"¡Hola {primer_nombre}! Soy Socri 🤖 y estoy para ayudarte a descubrir cosas nuevas sobre {materia_tema}. ¿De qué te gustaría hablar hoy?"
 
-# Inicialización de la sesión
+# Inicialización del chat
 if "messages" not in st.session_state or st.session_state.get("current_student") != primer_nombre:
     st.session_state.current_student = primer_nombre
     st.session_state.messages = [
@@ -142,9 +178,10 @@ if "messages" not in st.session_state or st.session_state.get("current_student")
         }
     ]
 
-# Renderizado del chat
+# Renderizado de la conversación
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
+    avatar_url = "https://api.dicebear.com/7.x/bottts/svg?seed=SocratesRobot&backgroundColor=b6e3f4" if msg["role"] == "assistant" else "https://api.dicebear.com/7.x/open-peeps/svg?seed=Student&face=smile"
+    with st.chat_message(msg["role"], avatar=avatar_url):
         st.write(msg["content"])
 
 # Entrada de usuario
@@ -154,8 +191,6 @@ if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
         st.stop()
         
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # Determinar fase aproximada según avance
     num_user_msgs = len([m for m in st.session_state.messages if m["role"] == "user"]) + 1
     fases = ["S", "O", "C", "R", "A", "T", "I", "C", "O"]
     fase_actual = fases[min(num_user_msgs - 1, len(fases) - 1)]
@@ -167,7 +202,8 @@ if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
         "fase": fase_actual
     })
     
-    with st.chat_message("user"):
+    student_avatar = "https://api.dicebear.com/7.x/open-peeps/svg?seed=Student&face=smile"
+    with st.chat_message("user", avatar=student_avatar):
         st.write(user_input)
 
     try:
@@ -195,7 +231,8 @@ if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
                 "timestamp": reply_time,
                 "fase": fase_actual
             })
-            with st.chat_message("assistant"):
+            bot_avatar = "https://api.dicebear.com/7.x/bottts/svg?seed=SocratesRobot&backgroundColor=b6e3f4"
+            with st.chat_message("assistant", avatar=bot_avatar):
                 st.write(bot_reply)
             st.rerun()
 
