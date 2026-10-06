@@ -82,7 +82,7 @@ with st.sidebar:
     else:
         st.markdown("<h1 style='text-align: center;'>👧👦</h1>", unsafe_allow_html=True)
 
-    nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez")
+    nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez o Sofía Gómez")
     curso_alumno = st.text_input("Curso / División *", placeholder="Ej: 5° A")
     materia_tema = st.text_input("Materia / Tema *", placeholder="Ej: TIC / Analógico vs Digital")
     
@@ -137,9 +137,27 @@ if not campos_completos:
     st.info("ℹ️ Estos datos son requeridos para el registro anónimo de trazabilidad educativa.")
     st.stop()
 
-primer_nombre = nombre_alumno.strip().split()[0]
+primer_nombre = nombre_alumno.strip().split()[0].capitalize()
 
-# Selección de avatar para el bot en el chat
+# Detección dinámica de avatar por género (usando imagen o emoji de respaldo)
+def obtener_avatar_alumno(nombre):
+    nombre_lower = nombre.lower()
+    
+    masculinos_excepcion = {"luca", "lucas", "bautista", "santiago", "tomas", "matias", "nicolas", "josue", "borja"}
+    femeninos_excepcion = {"isabel", "pilar", "raquel", "carmen", "mercedes", "ines", "milen", "abigail", "guadalupe", "azul", "sol", "luz", "belen"}
+    
+    es_femenino = False
+    if nombre_lower in femeninos_excepcion or (nombre_lower not in masculinos_excepcion and (nombre_lower.endswith('a') or nombre_lower.endswith('ia') or nombre_lower.endswith('ina') or nombre_lower.endswith('ela'))):
+        es_femenino = True
+
+    if es_femenino:
+        return "estudiante_chica.png" if os.path.exists("estudiante_chica.png") else "👧"
+    else:
+        return "estudiante_chico.png" if os.path.exists("estudiante_chico.png") else "👦"
+
+avatar_alumno = obtener_avatar_alumno(primer_nombre)
+
+# Selección de avatar para el bot
 if os.path.exists("robot_pequeño.png"):
     avatar_bot = "robot_pequeño.png"
 elif os.path.exists("robot_pequeno.png"):
@@ -151,7 +169,7 @@ else:
 # 3. MOTOR SOCRÁTICO (SYSTEM PROMPT)
 # ==========================================
 SYSTEM_PROMPT = f"""
-Actúas estrictamente como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (13 a 18 años). Hablás con tu alumno {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
+Actúas strictly como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (13 a 18 años). Hablás con tu alumno/a {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
 
 PRINCIPIOS GENERALES Y RIGOR PEDAGÓGICO:
 1. RIGOR CONCEPTUAL BASE:
@@ -193,7 +211,7 @@ if "messages" not in st.session_state or st.session_state.get("current_student")
 
 # Renderizado de la conversación
 for msg in st.session_state.messages:
-    current_avatar = avatar_bot if msg["role"] == "assistant" else "👦"
+    current_avatar = avatar_bot if msg["role"] == "assistant" else avatar_alumno
     with st.chat_message(msg["role"], avatar=current_avatar):
         st.write(msg["content"])
 
@@ -215,7 +233,7 @@ if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
         "fase": fase_actual
     })
     
-    with st.chat_message("user", avatar="👦"):
+    with st.chat_message("user", avatar=avatar_alumno):
         st.write(user_input)
 
     try:
