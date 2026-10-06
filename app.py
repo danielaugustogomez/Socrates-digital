@@ -33,10 +33,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Título Limpio (sin íconos pegados antes del texto)
+# Título Limpio
 st.markdown("<h1 style='text-align: center; color: #00163A; font-size: 2.8rem; font-weight: 800; margin-bottom: 10px;'>SÓCRATES DIGITAL</h1>", unsafe_allow_html=True)
 
-# Encabezado enmarcado: Templo a la izquierda | Subtítulo | Robot Grande a la derecha
+# Encabezado enmarcado: Templo | Subtítulo | Robot Grande
 col_templo, col_texto, col_robot = st.columns([1, 4, 1])
 
 with col_templo:
@@ -61,7 +61,7 @@ with col_robot:
 st.markdown("---")
 
 # ==========================================
-# GESTIÓN DE API KEY (SECRETS O MANUAL)
+# GESTIÓN DE API KEY
 # ==========================================
 claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 
@@ -71,7 +71,6 @@ claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 with st.sidebar:
     st.markdown("<h2 style='color: #00163A; font-size: 1.3rem; font-weight: 700;'>👤 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
     
-    # Imagen de la niña y el niño juntos
     try:
         st.image("estudiantes_juntos.png", use_container_width=True)
     except Exception:
@@ -155,7 +154,7 @@ PRINCIPIOS GENERALES Y RIGOR PEDAGÓGICO:
    - Formulá ÚNICAMENTE UNA pregunta al final de tu respuesta para mantener la secuencia dialógica.
 
 INVARIANTES GENERALES DE CONTROL Y CALIDAD DIALÓGICA:
-4. NEUTRALIDAD Y NO-INDUCCIÓN EN PREGUNTAS: Queda estrictamente PROHIBIDO incluir las respuestas o ejemplos sugeridos dentro de la pregunta.
+4. NEUTRALIDAD Y NO-INDUCCIÓN EN PREGUNTAS: Queda strictly PROHIBIDO incluir las respuestas o ejemplos sugeridos dentro de la pregunta.
 5. GRADUALIDAD Y DOSIFICACIÓN DEL ANDAMIAJE: No introduzcas modelos teóricos completos en la primera respuesta.
 6. OBSERVABILIDAD Y FENOMENOLOGÍA EXTERNA: Indagá exclusivamente sobre uso externo, efectos perceptibles por los sentidos o interacciones visibles.
 7. PIVOTEO Y ESCUCHA ACTIVA: Si el alumno hace una pregunta directa, abordá esa inquietud en tu siguiente respuesta.
@@ -185,4 +184,54 @@ for msg in st.session_state.messages:
         st.write(msg["content"])
 
 # Entrada de usuario
-if user_input := st.chat_input("Escribí
+if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
+    if not claude_api_key:
+        st.error("⚠️ Falta configurar la API Key de Claude.")
+        st.stop()
+        
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    num_user_msgs = len([m for m in st.session_state.messages if m["role"] == "user"]) + 1
+    fases = ["S", "O", "C", "R", "A", "T", "I", "C", "O"]
+    fase_actual = fases[min(num_user_msgs - 1, len(fases) - 1)]
+
+    st.session_state.messages.append({
+        "role": "user", 
+        "content": user_input, 
+        "timestamp": now_str,
+        "fase": fase_actual
+    })
+    
+    with st.chat_message("user", avatar="👦"):
+        st.write(user_input)
+
+    try:
+        client = anthropic.Anthropic(api_key=claude_api_key)
+
+        history_claude = []
+        for m in st.session_state.messages:
+            role_claude = "assistant" if m["role"] == "assistant" else "user"
+            history_claude.append({"role": role_claude, "content": m["content"]})
+
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=350,
+            system=SYSTEM_PROMPT,
+            messages=history_claude
+        )
+
+        bot_reply = response.content[0].text
+
+        if bot_reply:
+            reply_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            st.session_state.messages.append({
+                "role": "assistant", 
+                "content": bot_reply, 
+                "timestamp": reply_time,
+                "fase": fase_actual
+            })
+            with st.chat_message("assistant", avatar="robot_pequeno.png"):
+                st.write(bot_reply)
+            st.rerun()
+
+    except Exception as e:
+        st.error(f"Error de conexión con la API de Claude: {e}")
