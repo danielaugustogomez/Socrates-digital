@@ -16,24 +16,30 @@ st.title("🤖🏛️ SÓCRATES DIGITAL")
 st.caption("Tutor Mayéutico Inteligente — Desarrollo de Autonomía Cognitiva y Pensamiento Crítico")
 
 # ==========================================
+# GESTIÓN DE API KEY (SECRETS O MANUAL)
+# ==========================================
+claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
+
+# ==========================================
 # 2. BARRA LATERAL (REGISTRO Y CONFIGURACIÓN)
 # ==========================================
 with st.sidebar:
-    st.header("🔑 Configuración de API")
-    claude_api_key = st.text_input("Claude API Key (sk-ant-...):", type="password")
-    
-    st.markdown("---")
     st.header("👤 Registro del Alumno")
     nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez")
     curso_alumno = st.text_input("Curso / División *", placeholder="Ej: 5° A")
     materia_tema = st.text_input("Materia / Tema *", placeholder="Ej: TIC / Analógico vs Digital")
     
+    # Si por alguna razón no se configuró en Secrets, se solicita manualmente como respaldo
+    if not claude_api_key:
+        st.markdown("---")
+        st.header("🔑 Configuración de API")
+        claude_api_key = st.text_input("Claude API Key (sk-ant-...):", type="password")
+
     st.markdown("---")
     st.header("🔄 Control de Sesión")
     if st.button("🧹 Nuevo Alumno / Reiniciar Chat"):
         for key in list(st.session_state.keys()):
-            if key != "claude_api_key":
-                del st.session_state[key]
+            del st.session_state[key]
         st.rerun()
 
     st.markdown("---")
@@ -81,7 +87,7 @@ primer_nombre = nombre_alumno.strip().split()[0]
 # 3. MOTOR SOCRÁTICO (SYSTEM PROMPT DEF. TESIS)
 # ==========================================
 SYSTEM_PROMPT = f"""
-Actúas strictly como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (16 a 18 años). Hablás con tu alumno {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
+Actúas estrictamente como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (16 a 18 años). Hablás con tu alumno {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
 
 PRINCIPIOS GENERALES Y RIGOR PEDAGÓGICO:
 1. RIGOR CONCEPTUAL BASE:
@@ -144,7 +150,7 @@ for msg in st.session_state.messages:
 # Entrada de usuario
 if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
     if not claude_api_key:
-        st.error("⚠️ Por favor, ingresá tu API Key de Claude en la barra lateral.")
+        st.error("⚠️ Falta configurar la API Key de Claude.")
         st.stop()
         
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
