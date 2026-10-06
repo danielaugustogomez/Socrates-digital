@@ -30,6 +30,13 @@ st.markdown("""
         transform: translateY(-2px) !important;
         box-shadow: 0px 4px 12px rgba(0,0,0,0.15) !important;
     }
+    /* Contenedor para centrar la imagen de los alumnos en el sidebar */
+    .student-img-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -41,7 +48,7 @@ col_templo, col_texto, col_robot = st.columns([1, 4, 1])
 
 with col_templo:
     try:
-        st.image("templo.png", width=100)
+        st.image("templo.png", width=95)
     except Exception:
         st.markdown("<h1 style='text-align: center;'>🏛️</h1>", unsafe_allow_html=True)
 
@@ -54,7 +61,7 @@ with col_texto:
 
 with col_robot:
     try:
-        st.image("robot_grande (1).png", width=100)
+        st.image("robot_grande (1).png", width=95)
     except Exception:
         st.markdown("<h1 style='text-align: center;'>🤖</h1>", unsafe_allow_html=True)
 
@@ -71,8 +78,11 @@ claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 with st.sidebar:
     st.markdown("<h2 style='color: #00163A; font-size: 1.3rem; font-weight: 700;'>👤 REGISTRO DEL ALUMNO</h2>", unsafe_allow_html=True)
     
+    # Imagen de los estudiantes centrada y con tamaño controlado
     try:
-        st.image("estudiantes_juntos.png", use_container_width=True)
+        col_side_left, col_side_img, col_side_right = st.columns([1, 4, 1])
+        with col_side_img:
+            st.image("estudiantes_juntos.png", width=180)
     except Exception:
         st.markdown("<h1 style='text-align: center;'>👧👦</h1>", unsafe_allow_html=True)
 
@@ -154,7 +164,7 @@ PRINCIPIOS GENERALES Y RIGOR PEDAGÓGICO:
    - Formulá ÚNICAMENTE UNA pregunta al final de tu respuesta para mantener la secuencia dialógica.
 
 INVARIANTES GENERALES DE CONTROL Y CALIDAD DIALÓGICA:
-4. NEUTRALIDAD Y NO-INDUCCIÓN EN PREGUNTAS: Queda strictly PROHIBIDO incluir las respuestas o ejemplos sugeridos dentro de la pregunta.
+4. NEUTRALIDAD Y NO-INDUCCIÓN EN PREGUNTAS: Queda estrictamente PROHIBIDO incluir las respuestas o ejemplos sugeridos dentro de la pregunta.
 5. GRADUALIDAD Y DOSIFICACIÓN DEL ANDAMIAJE: No introduzcas modelos teóricos completos en la primera respuesta.
 6. OBSERVABILIDAD Y FENOMENOLOGÍA EXTERNA: Indagá exclusivamente sobre uso externo, efectos perceptibles por los sentidos o interacciones visibles.
 7. PIVOTEO Y ESCUCHA ACTIVA: Si el alumno hace una pregunta directa, abordá esa inquietud en tu siguiente respuesta.
