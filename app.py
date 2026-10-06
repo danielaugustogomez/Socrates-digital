@@ -44,7 +44,7 @@ with col_templo:
     if os.path.exists("templo.png"):
         st.image("templo.png", width=95)
     else:
-        st.markdown("<h1 style='text-align: center;'>🏛️</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center;'>🏛️️</h1>", unsafe_allow_html=True)
 
 with col_texto:
     st.markdown("""
@@ -139,7 +139,7 @@ if not campos_completos:
 
 primer_nombre = nombre_alumno.strip().split()[0].capitalize()
 
-# Detección dinámica de avatar por género (usando imagen o emoji de respaldo)
+# Detección dinámica de avatar por género
 def obtener_avatar_alumno(nombre):
     nombre_lower = nombre.lower()
     
@@ -151,9 +151,15 @@ def obtener_avatar_alumno(nombre):
         es_femenino = True
 
     if es_femenino:
-        return "estudiante_chica.png" if os.path.exists("estudiante_chica.png") else "👧"
+        for posible_nombre in ["estudiante_chica.png", "chica.png", "alumna.png"]:
+            if os.path.exists(posible_nombre):
+                return posible_nombre
+        return "👧"
     else:
-        return "estudiante_chico.png" if os.path.exists("estudiante_chico.png") else "👦"
+        for posible_nombre in ["estudiante_chico.png", "chico.png", "alumno.png"]:
+            if os.path.exists(posible_nombre):
+                return posible_nombre
+        return "👦"
 
 avatar_alumno = obtener_avatar_alumno(primer_nombre)
 
@@ -169,7 +175,7 @@ else:
 # 3. MOTOR SOCRÁTICO (SYSTEM PROMPT)
 # ==========================================
 SYSTEM_PROMPT = f"""
-Actúas strictly como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (13 a 18 años). Hablás con tu alumno/a {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
+Actúas estrictamente como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (16 a 18 años). Hablás con tu alumno/a {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
 
 PRINCIPIOS GENERALES Y RIGOR PEDAGÓGICO:
 1. RIGOR CONCEPTUAL BASE:
