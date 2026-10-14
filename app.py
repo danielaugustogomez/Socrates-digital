@@ -82,6 +82,16 @@ with st.sidebar:
     else:
         st.markdown("<h1 style='text-align: center;'>👧👦</h1>", unsafe_allow_html=True)
 
+    # Callback para vaciar los campos antes del renderizado
+    def reiniciar_sesion():
+        st.session_state["campo_nombre"] = ""
+        st.session_state["campo_curso"] = ""
+        st.session_state["campo_materia"] = ""
+        if "messages" in st.session_state:
+            del st.session_state["messages"]
+        if "current_student" in st.session_state:
+            del st.session_state["current_student"]
+
     nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez o Sofía Gómez", key="campo_nombre")
     curso_alumno = st.text_input("Curso / División *", placeholder="Ej: 5° A", key="campo_curso")
     materia_tema = st.text_input("Materia / Tema *", placeholder="Ej: TIC / Analógico vs Digital", key="campo_materia")
@@ -92,15 +102,7 @@ with st.sidebar:
         claude_api_key = st.text_input("Claude API Key (sk-ant-...):", type="password")
 
     st.markdown("---")
-    if st.button("🧹 Nuevo Alumno / Reiniciar Chat", use_container_width=True):
-        st.session_state["campo_nombre"] = ""
-        st.session_state["campo_curso"] = ""
-        st.session_state["campo_materia"] = ""
-        if "messages" in st.session_state:
-            del st.session_state["messages"]
-        if "current_student" in st.session_state:
-            del st.session_state["current_student"]
-        st.rerun()
+    st.button("🧹 Nuevo Alumno / Reiniciar Chat", on_click=reiniciar_sesion, use_container_width=True)
 
     st.markdown("---")
     st.header("📊 Analítica y Trazabilidad")
