@@ -82,9 +82,27 @@ with st.sidebar:
     else:
         st.markdown("<h1 style='text-align: center;'>👧👦</h1>", unsafe_allow_html=True)
 
-    nombre_alumno = st.text_input("Nombre y Apellido *", placeholder="Ej: Lucas Pérez o Sofía Gómez")
-    curso_alumno = st.text_input("Curso / División *", placeholder="Ej: 5° A")
-    materia_tema = st.text_input("Materia / Tema *", placeholder="Ej: TIC / Analógico vs Digital")
+    # Control de reseteo para limpiar inputs
+    if "reset_count" not in st.session_state:
+        st.session_state.reset_count = 0
+
+    reset_id = st.session_state.reset_count
+
+    nombre_alumno = st.text_input(
+        "Nombre y Apellido *", 
+        placeholder="Ej: Lucas Pérez o Sofía Gómez",
+        key=f"input_nombre_{reset_id}"
+    )
+    curso_alumno = st.text_input(
+        "Curso / División *", 
+        placeholder="Ej: 5° A",
+        key=f"input_curso_{reset_id}"
+    )
+    materia_tema = st.text_input(
+        "Materia / Tema *", 
+        placeholder="Ej: TIC / Analógico vs Digital",
+        key=f"input_materia_{reset_id}"
+    )
     
     if not claude_api_key:
         st.markdown("---")
@@ -93,8 +111,8 @@ with st.sidebar:
 
     st.markdown("---")
     if st.button("🧹 Nuevo Alumno / Reiniciar Chat", use_container_width=True):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
+        st.session_state.clear()
+        st.session_state.reset_count = reset_id + 1
         st.rerun()
 
     st.markdown("---")
@@ -130,150 +148,4 @@ with st.sidebar:
             )
 
 # Validar datos del alumno
-campos_completos = bool(nombre_alumno.strip() and curso_alumno.strip() and materia_tema.strip())
-
-if not campos_completos:
-    st.warning("👈 **Atención:** Para comenzar la sesión de aprendizaje, completá obligatoriamente tu **Nombre, Curso y Materia** en el panel lateral.")
-    st.info("ℹ️ Estos datos son requeridos para el registro anónimo de trazabilidad educativa.")
-    st.stop()
-
-primer_nombre = nombre_alumno.strip().split()[0].capitalize()
-
-# Detección dinámica de avatar por género
-def obtener_avatar_alumno(nombre):
-    nombre_lower = nombre.lower()
-    
-    masculinos_excepcion = {"luca", "lucas", "bautista", "santiago", "tomas", "matias", "nicolas", "josue", "borja"}
-    femeninos_excepcion = {"isabel", "pilar", "raquel", "carmen", "mercedes", "ines", "milen", "abigail", "guadalupe", "azul", "sol", "luz", "belen"}
-    
-    es_femenino = False
-    if nombre_lower in femeninos_excepcion or (nombre_lower not in masculinos_excepcion and (nombre_lower.endswith('a') or nombre_lower.endswith('ia') or nombre_lower.endswith('ina') or nombre_lower.endswith('ela'))):
-        es_femenino = True
-
-    if es_femenino:
-        for posible_nombre in ["estudiante_chica.png", "chica.png", "alumna.png"]:
-            if os.path.exists(posible_nombre):
-                return posible_nombre
-        return "👧"
-    else:
-        for posible_nombre in ["estudiante_chico.png", "chico.png", "alumno.png"]:
-            if os.path.exists(posible_nombre):
-                return posible_nombre
-        return "👦"
-
-avatar_alumno = obtener_avatar_alumno(primer_nombre)
-
-# Selección de avatar para el bot
-if os.path.exists("robot_pequeño.png"):
-    avatar_bot = "robot_pequeño.png"
-elif os.path.exists("robot_pequeno.png"):
-    avatar_bot = "robot_pequeno.png"
-else:
-    avatar_bot = "🤖"
-
-# ==========================================
-# 3. MOTOR SOCRÁTICO (SYSTEM PROMPT BLINDADO)
-# ==========================================
-SYSTEM_PROMPT = f"""
-Actúas estrictamente como "Sócrates Digital", un tutor virtual mayéutico especializado en el desarrollo del pensamiento crítico y la autonomía cognitiva para estudiantes de educación secundaria (16 a 18 años). Hablás con tu alumno/a {primer_nombre} (Curso: {curso_alumno}, Materia: {materia_tema}).
-
-PRINCIPIOS FUNDAMENTALES Y BLINDAJE MAYÉUTICO:
-
-1. PROHIBICIÓN ABSOLUTA DE DEFINICIONES SERVÍDAS (REGLA DE ORO):
-   - JAMÁS entregues conceptos, definiciones teóricas, fórmulas ni soluciones directas redactadas por vos.
-   - Ni al inicio, ni en el medio, ni al final del diálogo.
-   - Si el estudiante insiste o presiona diciendo: "dame la definición", "tengo examen", "no sé nada", "decímelo vos" o "me rindo", NO CEDAS. Respondé con empatía pedagógica sin romper el método:
-     "Entiendo la urgencia por el examen, pero recordar las cosas razonándolas ahora es lo que te asegura fijar el concepto y aprobarlo. Vamos juntos, un paso más: [...]" y formulá una repregunta simple.
-
-2. RIGOR CONCEPTUAL Y CONTROL DE ANALOGÍAS TÉCNICAS:
-   - LO ANALÓGICO ES CONTINUO Y SIN SALTOS: Fenómenos naturales, transiciones graduales, infinitos valores intermedios.
-   - LO DIGITAL ES DISCRETO Y A SALTOS: Estados fijos, contados, cuantizados (0 y 1, encendido/apagado, peldaños).
-   - REGLA CRÍTICA DE ANALOGÍAS: Para explicar lo analógico, NUNCA uses celulares, pantallas táctiles ni apps (los dispositivos electrónicos son internamente digitales y cuantizan valores). Usá siempre ejemplos mecánicos o físicos puros: una rampa suave (analógico) vs. una escalera de peldaños (digital); una canilla de rosca continua vs. una tecla de luz de encendido/apagado.
-
-3. CIERRE SOCRÁTICO (LA SÍNTESIS LA HACE EL ALUMNO):
-   - Cuando el alumno deduzca la característica clave, JAMÁS concluyas diciendo: "Eso es [Concepto]".
-   - En su lugar, transferile la síntesis al alumno:
-     "Exacto, descubriste la clave: no hay saltos y los valores son continuos. Sabiendo esto, ¿cómo le definirías con tus propias palabras qué es lo analógico a un compañero de clase?".
-   - El objetivo pedagógico se cumple cuando la definición final sale de la mente y las palabras de {primer_nombre}, no de las tuyas.
-
-4. ESTRUCTURA Y FORMATO DE MENSAJE:
-   - Tono cercano, entusiasta, claro y sintético (máximo 2 a 3 oraciones por mensaje).
-   - Estilo dialógico: breve validación del aporte previo + repregunta enfocada.
-   - Formulá ÚNICAMENTE UNA sola pregunta al final de tu mensaje.
-
-5. ANDAMIAJE ANTE EL ERROR O BLOQUEO ("No sé"):
-   - Si responde "no sé" o duda, jamás des la respuesta. Reducí la complejidad ofreciendo una elección binaria o un contraste simple entre dos situaciones cotidianas observables.
-"""
-
-mensaje_bienvenida_unico = f"¡Hola {primer_nombre}! Soy Socri 🤖 y estoy para ayudarte a descubrir cosas nuevas sobre {materia_tema}. ¿De qué te gustaría hablar hoy?"
-
-# Inicialización del chat
-if "messages" not in st.session_state or st.session_state.get("current_student") != primer_nombre:
-    st.session_state.current_student = primer_nombre
-    st.session_state.messages = [
-        {
-            "role": "assistant", 
-            "content": mensaje_bienvenida_unico,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "fase": "S"
-        }
-    ]
-
-# Renderizado de la conversación
-for msg in st.session_state.messages:
-    current_avatar = avatar_bot if msg["role"] == "assistant" else avatar_alumno
-    with st.chat_message(msg["role"], avatar=current_avatar):
-        st.write(msg["content"])
-
-# Entrada de usuario
-if user_input := st.chat_input("Escribí tu respuesta o duda aquí..."):
-    if not claude_api_key:
-        st.error("⚠️ Falta configurar la API Key de Claude.")
-        st.stop()
-        
-    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    num_user_msgs = len([m for m in st.session_state.messages if m["role"] == "user"]) + 1
-    fases = ["S", "O", "C", "R", "A", "T", "I", "C", "O"]
-    fase_actual = fases[min(num_user_msgs - 1, len(fases) - 1)]
-
-    st.session_state.messages.append({
-        "role": "user", 
-        "content": user_input, 
-        "timestamp": now_str,
-        "fase": fase_actual
-    })
-    
-    with st.chat_message("user", avatar=avatar_alumno):
-        st.write(user_input)
-
-    try:
-        client = anthropic.Anthropic(api_key=claude_api_key)
-
-        history_claude = []
-        for m in st.session_state.messages:
-            role_claude = "assistant" if m["role"] == "assistant" else "user"
-            history_claude.append({"role": role_claude, "content": m["content"]})
-
-        response = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=350,
-            system=SYSTEM_PROMPT,
-            messages=history_claude
-        )
-
-        bot_reply = response.content[0].text
-
-        if bot_reply:
-            reply_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            st.session_state.messages.append({
-                "role": "assistant", 
-                "content": bot_reply, 
-                "timestamp": reply_time,
-                "fase": fase_actual
-            })
-            with st.chat_message("assistant", avatar=avatar_bot):
-                st.write(bot_reply)
-            st.rerun()
-
-    except Exception as e:
-        st.error(f"Error de conexión con la API de Claude: {e}")
+campos_completos = bool(nombre_alumno.strip() and curso_
