@@ -146,6 +146,10 @@ with st.sidebar:
                 mime="text/csv",
                 use_container_width=True
             )
-
 # Validar datos del alumno
-campos_completos = bool(nombre_alumno.strip() and curso_
+campos_completos = bool(nombre_alumno.strip() and curso_alumno.strip() and materia_tema.strip())
+
+if not campos_completos:
+    st.warning("👈 **Atención:** Para comenzar la sesión de aprendizaje, completá obligatoriamente tu **Nombre, Curso y Materia** en el panel lateral.")
+    st.info("ℹ️ Estos datos son requeridos para el registro anónimo de trazabilidad educativa.")
+    st.stop()
