@@ -1,3 +1,5 @@
 streamlit
 pandas
 anthropic
+gspread
+oauth2client
