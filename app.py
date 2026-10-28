@@ -74,6 +74,18 @@ st.markdown("---")
 claude_api_key = st.secrets.get("ANTHROPIC_API_KEY", None)
 
 # ==========================================
+# CONEXIÓN A LA BASE DE DATOS (GOOGLE SHEETS)
+# ==========================================
+try:
+    credenciales_google = json.loads(st.secrets["google"])
+    alcance = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    credenciales = ServiceAccountCredentials.from_json_keyfile_dict(credenciales_google, alcance)
+    cliente = gspread.authorize(credenciales)
+    base_de_datos = cliente.open("Socrates-BD")
+except Exception as e:
+    st.error(f"Problema conectando al Excel: {e}")
+
+# ==========================================
 # 2. BARRA LATERAL (REGISTRO Y CONFIGURACIÓN)
 # ==========================================
 with st.sidebar:
