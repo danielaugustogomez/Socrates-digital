@@ -163,10 +163,14 @@ with st.sidebar:
                 use_container_width=True
             )
 
-st.markdown("---")
+            st.markdown("---")
             if st.button("☁️ Guardar sesión en la nube", use_container_width=True):
                 with st.spinner("Guardando en la base de datos..."):
                     fecha_ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    historial_texto = str([{"rol": m["role"], "msj": m["content"]} for m in st.session_state.messages])
+                    metrica = f"Tema: {materia_tema} | Interacciones: {interacciones}"
+                    guardar_en_excel(fecha_ahora, nombre_alumno, curso_alumno, "-", historial_texto, metrica)
+                st.success("¡Guardado en Excel!")
                     
                     # Convertimos el historial a un formato de texto para que entre en la celda del Excel
                     historial_texto = str([{"rol": m["role"], "msj": m["content"]} for m in st.session_state.messages])
