@@ -131,8 +131,7 @@ with st.sidebar:
     st.markdown("---")
     st.button("🧹 Nuevo Alumno / Reiniciar Chat", on_click=reiniciar_sesion, use_container_width=True)
 
-    st.markdown("---")
-    st.header("📊 Analítica y Trazabilidad")
+    st.markdown("---")st.header("📊 Analítica y Trazabilidad")
     if "messages" in st.session_state:
         interacciones = len([m for m in st.session_state.messages if m["role"] == "user"])
         st.metric("Interacciones del Alumno", interacciones)
@@ -162,7 +161,7 @@ with st.sidebar:
                 mime="text/csv",
                 use_container_width=True
             )
-
+            
             st.markdown("---")
             if st.button("☁️ Guardar sesión en la nube", use_container_width=True):
                 with st.spinner("Guardando en la base de datos..."):
