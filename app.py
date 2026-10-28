@@ -163,6 +163,27 @@ with st.sidebar:
                 use_container_width=True
             )
 
+st.markdown("---")
+            if st.button("☁️ Guardar sesión en la nube", use_container_width=True):
+                with st.spinner("Guardando en la base de datos..."):
+                    fecha_ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    
+                    # Convertimos el historial a un formato de texto para que entre en la celda del Excel
+                    historial_texto = str([{"rol": m["role"], "msj": m["content"]} for m in st.session_state.messages])
+                    
+                    # Métrica provisoria (más adelante haremos que la IA la analice)
+                    metrica_texto = f"Tema: {materia_tema} | Interacciones: {interacciones}"
+                    
+                    guardar_en_excel(
+                        fecha=fecha_ahora,
+                        alumno=nombre_alumno,
+                        curso=curso_alumno,
+                        division="-", 
+                        historial=historial_texto,
+                        metrica=metrica_texto
+                    )
+                st.success("¡Sesión registrada en Google Sheets exitosamente!")
+                
 # Validar datos del alumno
 campos_completos = bool(nombre_alumno.strip() and curso_alumno.strip() and materia_tema.strip())
 
