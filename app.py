@@ -86,6 +86,16 @@ except Exception as e:
     st.error(f"Problema conectando al Excel: {e}")
 
 # ==========================================
+# HERRAMIENTA PARA GUARDAR DATOS EN EXCEL
+# ==========================================
+def guardar_en_excel(fecha, alumno, curso, division, historial, metrica):
+    try:
+        hoja_registros = base_de_datos.worksheet("Registros")
+        hoja_registros.append_row([fecha, alumno, curso, division, historial, metrica])
+    except Exception as e:
+        print("Error al guardar en Excel:", e)
+
+# ==========================================
 # 2. BARRA LATERAL (REGISTRO Y CONFIGURACIÓN)
 # ==========================================
 with st.sidebar:
