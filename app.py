@@ -4,6 +4,11 @@ import pandas as pd
 from datetime import datetime
 import anthropic
 
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import json
+import ast
+
 # ==========================================
 # 1. CONFIGURACIÓN DE PÁGINA E INTERFAZ
 # ==========================================
