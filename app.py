@@ -164,13 +164,13 @@ with st.sidebar:
             )
             
             st.markdown("---")
-            if st.button("☁️ Guardar sesión en la nube", use_container_width=True):
+            if st.button("🛑 Finalizar chat y guardar", use_container_width=True):
                 with st.spinner("Guardando en la base de datos..."):
                     fecha_ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                     historial_texto = str([{"rol": m["role"], "msj": m["content"]} for m in st.session_state.messages])
                     metrica = f"Tema: {materia_tema} | Interacciones: {interacciones}"
                     guardar_en_excel(fecha_ahora, nombre_alumno, curso_alumno, "-", historial_texto, metrica)
-                st.success("¡Sesión registrada en Google Sheets exitosamente!")
+                st.success("¡Chat finalizado y guardado exitosamente! Ya podés cerrar o reiniciar.")
 
 # Validar datos del alumno
 campos_completos = bool(nombre_alumno.strip() and curso_alumno.strip() and materia_tema.strip())
